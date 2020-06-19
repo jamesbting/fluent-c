@@ -13,7 +13,7 @@ install:
 	make
 	cp ./${exec}  /usr/local/bin/${name}
 clean:
-	-rm *.out
-	-rm*.o
-	-rm src/*.o
+	-rm ./*.out
+	-rm ./*.o
+	-rm ./src/*.o
 
