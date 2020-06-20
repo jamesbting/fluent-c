@@ -1,10 +1,12 @@
 #include "include/AST.h"
 #include <stdlib.h>
+
 //constructor
 AST_T* init_ast(int type) {
 	AST_T* ast = calloc(1, sizeof(struct AST_STRUCT));
 	ast->type = type;
-
+	
+	//set all the initial values to (void*) 0 to avoid segmentation fault errors
 	/*AST_VARIABLE_DEFINTION*/
 	ast->variable_definition_variable_name = (void*) 0;	
 	ast->variable_definition_value = (void*) 0;
@@ -19,6 +21,10 @@ AST_T* init_ast(int type) {
 
 	//AST_STRING
 	ast->string_value = (void*) 0;
-	
+
+
+	//AST_COMPOUND
+	ast->compount_value = (void*) 0;
+	ast->compound_size = (void*) 0;	
 	return ast;
 }
