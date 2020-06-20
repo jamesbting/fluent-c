@@ -93,7 +93,7 @@ token_T* lexer_advance_with_token(lexer_T* lexer, token_T* token) {
 	return token;
 }
 
-//return a string representing the caracter at the current lexer position
+//return a string representing the character at the current lexer position
 char* lexer_get_current_char_as_string(lexer_T* lexer){
 	char* str = calloc(2, sizeof(char));
 	str[0] = lexer->c;
