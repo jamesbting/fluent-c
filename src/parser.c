@@ -98,31 +98,31 @@ AST_T *parser_parse_term(parser_T *parser) {}
 //we found a function so parse a function call
 AST_T *parser_parse_function_call(parser_T *parser)
 {
-	AST_T* function_call = init_ast(AST_FUNCTION_CALL);
-	
+	AST_T *function_call = init_ast(AST_FUNCTION_CALL);
+
 	parser_eat(parser, TOKEN_LPAREN);
-	
+
 	function_call->function_call_name = parser->prev_token->value;
-	
-	function_call->function_call_arguments = calloc(1,sizeof(struct AST_STRUCT*));
-	
+
+	function_call->function_call_arguments = calloc(1, sizeof(struct AST_STRUCT *));
+
 	//every argument is an expression, so parse some expressions
 	//add first one to the list
-	AST_T* ast_expression = parser_parse_expression(parser);
+	AST_T *ast_expression = parser_parse_expression(parser);
 	function_call->function_call_arguments[0] = ast_expression;
 
-	while(parser->current_token->type == TOKEN_COMMA) {
+	while (parser->current_token->type == TOKEN_COMMA)
+	{
 		parser_eat(parser, TOKEN_COMMA);
 
-		AST_T* ast_expr = parser_parse_expression(parser);
+		AST_T *ast_expr = parser_parse_expression(parser);
 		function_call->function_call_arguments_size += 1;
 		function_call->function_call_arguments = realloc(
-				function_call->function_call_arguments,
-				function_call->function_call_arguments_size * sizeof(struct AST_STRUCT*)
-				);
-		function_call->function_call_arguments[function_call->function_call_arguments_size-1] = ast_expr;
+			function_call->function_call_arguments,
+			function_call->function_call_arguments_size * sizeof(struct AST_STRUCT *));
+		function_call->function_call_arguments[function_call->function_call_arguments_size - 1] = ast_expr;
 	}
-	parser_eat(parser,TOKEN_RPAREN);
+	parser_eat(parser, TOKEN_RPAREN);
 	return function_call;
 }
 
