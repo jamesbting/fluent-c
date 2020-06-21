@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
 	parser_T* parser = init_parser(lexer);
 
 	AST_T* root = parser_parse(parser);
-	printf("%d\n", root->type);
-	printf("%d\n", root->compound_size);
+	//printf("%d\n", root->type);
+	//printf("%d\n", root->compound_size);
 	return 0;
 }
