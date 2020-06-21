@@ -73,13 +73,18 @@ AST_T* parser_parse_statements(parser_T *parser)
 	return compound;
 }
 
-AST_T* parser_parse_expression(parser_T *parser){}
+AST_T* parser_parse_expression(parser_T *parser){
+	switch(parser->current_token->type) {
+		case TOKEN_STRING: return parser_parse_string(parser);
+	}
+}
 
 AST_T* parser_parse_factor(parser_T *parser){}
 
 AST_T* parser_parse_term(parser_T *parser){}
 
-AST_T* parser_parse_function_call(parser_T *parser){}
+AST_T* parser_parse_function_call(parser_T *parser){
+}
 
 AST_T* parser_parse_variable_definition(parser_T *parser)
 {
@@ -100,18 +105,41 @@ AST_T* parser_parse_variable_definition(parser_T *parser)
 	return variable_definition_value;
 }
 
-AST_T* parser_parse_variable(parser_T *parser){}
+AST_T* parser_parse_variable(parser_T *parser){
+	parser_eat(parser, TOKEN_ID);
+	char* token_value = parser->current_token->value;
+	
+	
+	if(parser->current_token->type == TOKEN_LPAREN) {
+		//we found an id with a left parantheses - its probably a function call, so parse a fucntion call isntead
+		return parser_parse_function_call(parser);
+	} else {
+		AST_T* ast_variable = init_ast(AST_VARIABLE);
+		ast_variable->variable_name = token_value;
 
-AST_T* parser_parse_string(parser_T *parser){}
+		return ast_variable;
+	}
+}
+
+AST_T* parser_parse_string(parser_T *parser){
+	AST_T* ast_string = init_ast(AST_STRING);
+	ast_string->string_value = parser->current_token->value;
+
+	parser_eat(parser, TOKEN_STRING);
+	
+	return ast_string;
+}
 
 AST_T* parser_parse_ID(parser_T *parser)
 {
 	if (strcmp(parser->current_token->value, "var") == 0)
 	{
+		//the source code has the keyword var in it, assume they are trying to declare a variable
 		return parser_parse_variable_definition(parser);
 	}
 	else
 	{
+		//assume they are trying to declare a variable
 		return parser_parse_variable(parser);
 	}
 }
