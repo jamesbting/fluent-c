@@ -1,8 +1,11 @@
 #ifndef TOKEN_H
 #define TOKEN_H
-typedef struct TOKEN_STRUCT {
+typedef struct TOKEN_STRUCT
+{
 	//type of the token
-	enum {
+	//Fluent-C currently has support for strings and functions
+	enum
+	{
 		TOKEN_ID,
 		TOKEN_EQUALS,
 		TOKEN_STRING,
@@ -11,10 +14,10 @@ typedef struct TOKEN_STRUCT {
 		TOKEN_RPAREN,
 		TOKEN_COMMA,
 		TOKEN_EOF
-	}type;
-	char* value;
-}token_T;
+	} type;
+	char *value;
+} token_T;
 
 //constructor for the token
-token_T* init_token(int type, char* value);
+token_T *init_token(int type, char *value);
 #endif

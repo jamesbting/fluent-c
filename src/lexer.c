@@ -69,7 +69,7 @@ token_T *lexer_get_next_token(lexer_T *lexer)
 			break;
 		}
 	}
-	//reached the end
+	// if we reached here, we have reached the end so make a EOF token, and return it
 	return init_token(TOKEN_EOF, '\0');
 }
 
