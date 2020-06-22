@@ -10,7 +10,8 @@ typedef struct AST_STRUCT
 		AST_VARIABLE_DEFINITION,
 		AST_VARIABLE,
 		AST_STRING,
-		AST_COMPOUND
+		AST_COMPOUND,
+		AST_NOOP
 	} type;
 
 	//properties of the AST NODE

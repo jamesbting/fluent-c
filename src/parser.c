@@ -45,6 +45,9 @@ AST_T *parser_parse_statement(parser_T *parser)
 	case TOKEN_ID:
 		return parser_parse_ID(parser);
 	}
+
+	//no valid statement found
+	return init_ast(AST_NOOP);
 }
 
 //function that will parse multiple statements, while they exist
@@ -58,6 +61,8 @@ AST_T *parser_parse_statements(parser_T *parser)
 
 	AST_T *ast_statement = parser_parse_statement(parser);
 	compound->compound_value[0] = ast_statement;
+	compound->compound_size += 1;
+
 
 	//while there are semicolons
 	while (parser->current_token->type == TOKEN_SEMI)
@@ -65,17 +70,20 @@ AST_T *parser_parse_statements(parser_T *parser)
 
 		//makes sure there is a semi colon
 		parser_eat(parser, TOKEN_SEMI);
-
+		//if(parser->current_token->type == TOKEN_ID) {
 		//there is a semicolon, so add it to the compound node that will be the root, and then continue with next statement
 		AST_T *ast_statement = parser_parse_statement(parser);
-		compound->compound_size += 1;
-		compound->compound_value = realloc(
-			compound->compound_value,
-			compound->compound_size * sizeof(struct AST_STRUCT *));
 
-		compound->compound_value[compound->compound_size - 1] = ast_statement;
+		if(ast_statement){	
+		
+			compound->compound_size += 1;
+			compound->compound_value = realloc(
+				compound->compound_value,
+				compound->compound_size * sizeof(struct AST_STRUCT *));
+
+			compound->compound_value[compound->compound_size - 1] = ast_statement;
+		}
 	}
-
 	return compound;
 }
 
@@ -89,6 +97,8 @@ AST_T *parser_parse_expression(parser_T *parser)
 	case TOKEN_ID:
 		return parser_parse_ID(parser);
 	}
+
+	return init_ast(AST_NOOP);
 }
 
 AST_T *parser_parse_factor(parser_T *parser) {}
@@ -100,17 +110,19 @@ AST_T *parser_parse_function_call(parser_T *parser)
 {
 	AST_T* function_call = init_ast(AST_FUNCTION_CALL);
 	
-	parser_eat(parser, TOKEN_LPAREN);
 	
 	function_call->function_call_name = parser->prev_token->value;
-	
+	parser_eat(parser,TOKEN_LPAREN);
+
+
 	function_call->function_call_arguments = calloc(1,sizeof(struct AST_STRUCT*));
 	
 	//every argument is an expression, so parse some expressions
 	//add first one to the list
 	AST_T* ast_expression = parser_parse_expression(parser);
 	function_call->function_call_arguments[0] = ast_expression;
-
+	function_call->function_call_arguments_size += 1;
+		
 	while(parser->current_token->type == TOKEN_COMMA) {
 		parser_eat(parser, TOKEN_COMMA);
 
@@ -136,14 +148,14 @@ AST_T *parser_parse_variable_definition(parser_T *parser)
 	parser_eat(parser, TOKEN_ID);	  //expect variable name
 	parser_eat(parser, TOKEN_EQUALS); //expect equals sign for assignment
 
-	AST_T *variable_value = parser_parse_expression(parser);
+	AST_T *variable_definition_value = parser_parse_expression(parser);
 
-	AST_T *variable_definition_value = init_ast(AST_VARIABLE_DEFINITION);
+	AST_T *variable_definition = init_ast(AST_VARIABLE_DEFINITION);
 
-	variable_definition_value->variable_definition_variable_name = variable_defintion_variable_name;
-	variable_definition_value->variable_definition_value = variable_definition_value;
+	variable_definition->variable_definition_variable_name = variable_defintion_variable_name;
+	variable_definition->variable_definition_value = variable_definition_value;
 
-	return variable_definition_value;
+	return variable_definition;
 }
 
 //function to parse accesssing a variable from memory
