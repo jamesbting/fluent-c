@@ -1,1 +1,3 @@
 compile.sh
+*.o
+*.swp
