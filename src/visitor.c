@@ -2,76 +2,102 @@
 #include <stdio.h>
 #include <string.h>
 
-
-static AST_T* builtin_function_print(visitor_T* visitor, AST_T** args, int args_size)
+//built in print function that will print the value of the print parameters to STDOUT
+//only supports strings at the moment
+static AST_T *builtin_function_print(visitor_T *visitor, AST_T **args, int args_size)
 {
     for (int i = 0; i < args_size; i++)
     {
-        AST_T* visited_ast = visitor_visit(visitor, args[i]);
+        AST_T *visited_ast = visitor_visit(visitor, args[i]);
 
         switch (visited_ast->type)
         {
-            case AST_STRING: printf("%s\n", visited_ast->string_value); break;
-            default: printf("%p\n", visited_ast); break;
+        case AST_STRING:
+            printf("%s\n", visited_ast->string_value);
+            break;
+        default:
+            printf("%p\n", visited_ast);
+            break; //not a printable value, print the reference to the value instead
         }
     }
 
     return init_ast(AST_NOOP);
 }
 
-visitor_T* init_visitor()
+//constructor
+visitor_T *init_visitor()
 {
-    visitor_T* visitor = calloc(1, sizeof(struct VISITOR_STRUCT));
-    visitor->variable_definitions = (void*) 0;
+    visitor_T *visitor = calloc(1, sizeof(struct VISITOR_STRUCT));
+    visitor->variable_definitions = (void *)0;
     visitor->variable_definition_size = 0;
 
     return visitor;
 }
 
-AST_T* visitor_visit(visitor_T* visitor, AST_T* node)
+//main entry point
+//visit a specified node, and depending on the node type, perform different actions
+AST_T *visitor_visit(visitor_T *visitor, AST_T *node)
 {
     switch (node->type)
     {
-        case AST_VARIABLE_DEFINITION: return visitor_visit_variable_definition(visitor, node); break;
-        case AST_VARIABLE: return visitor_visit_variable(visitor, node); break;
-        case AST_FUNCTION_CALL: return visitor_visit_function_call(visitor, node); break;
-        case AST_STRING: return visitor_visit_string(visitor, node); break;
-        case AST_COMPOUND: return visitor_visit_compound(visitor, node); break;
-        case AST_NOOP: return node; break;
+    case AST_VARIABLE_DEFINITION:
+        return visitor_visit_variable_definition(visitor, node);
+        break;
+    case AST_VARIABLE:
+        return visitor_visit_variable(visitor, node);
+        break;
+    case AST_FUNCTION_CALL:
+        return visitor_visit_function_call(visitor, node);
+        break;
+    case AST_STRING:
+        return visitor_visit_string(visitor, node);
+        break;
+    case AST_COMPOUND:
+        return visitor_visit_compound(visitor, node);
+        break;
+    case AST_NOOP:
+        return node;
+        break;
     }
 
+    //unexpected node type, fatal so terminate the program
     printf("Uncaught statement of type `%d`\n", node->type);
     exit(1);
 
+    // technically unreachable code, but its here for prettyness purposes
     return init_ast(AST_NOOP);
 }
 
-AST_T* visitor_visit_variable_definition(visitor_T* visitor, AST_T* node)
+//user is trying to declare a variable
+AST_T *visitor_visit_variable_definition(visitor_T *visitor, AST_T *node)
 {
-    if (visitor->variable_definitions == (void*) 0)
+
+    if (visitor->variable_definitions == (void *)0)
     {
-        visitor->variable_definitions = calloc(1, sizeof(struct AST_STRUCT*));
+        //non empty variable definitions
+        visitor->variable_definitions = calloc(1, sizeof(struct AST_STRUCT *));
         visitor->variable_definitions[0] = node;
         visitor->variable_definition_size += 1;
     }
     else
     {
+        //non empty variable definitions
         visitor->variable_definition_size += 1;
         visitor->variable_definitions = realloc(
             visitor->variable_definitions,
-            visitor->variable_definition_size * sizeof(struct AST_STRUCT*)  
-        );
-        visitor->variable_definitions[visitor->variable_definition_size-1] = node;
+            visitor->variable_definition_size * sizeof(struct AST_STRUCT *));
+        visitor->variable_definitions[visitor->variable_definition_size - 1] = node;
     }
 
     return node;
 }
 
-AST_T* visitor_visit_variable(visitor_T* visitor, AST_T* node)
+//user is trying to access a previously declared variable
+AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node)
 {
     for (int i = 0; i < visitor->variable_definition_size; i++)
     {
-        AST_T* vardef = visitor->variable_definitions[i];
+        AST_T *vardef = visitor->variable_definitions[i];
 
         if (strcmp(vardef->variable_definition_variable_name, node->variable_name) == 0)
         {
@@ -79,11 +105,13 @@ AST_T* visitor_visit_variable(visitor_T* visitor, AST_T* node)
         }
     }
 
+    //variable name does not exist
     printf("Undefined variable `%s\n`", node->variable_name);
     return node;
 }
 
-AST_T* visitor_visit_function_call(visitor_T* visitor, AST_T* node)
+//visit variable
+AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node)
 {
     if (strcmp(node->function_call_name, "print") == 0)
     {
@@ -94,12 +122,13 @@ AST_T* visitor_visit_function_call(visitor_T* visitor, AST_T* node)
     exit(1);
 }
 
-AST_T* visitor_visit_string(visitor_T* visitor, AST_T* node)
+AST_T *visitor_visit_string(visitor_T *visitor, AST_T *node)
 {
     return node;
 }
 
-AST_T* visitor_visit_compound(visitor_T* visitor, AST_T* node)
+//iteratively visit each statement in a compound node
+AST_T *visitor_visit_compound(visitor_T *visitor, AST_T *node)
 {
     for (int i = 0; i < node->compound_size; i++)
     {
