@@ -14,7 +14,9 @@ AST_T *init_ast(int type)
 
     /* AST_VARIABLE */
     ast->variable_name = (void *)0;
-
+	
+    /*AST_FUNCTION_DEFINITION */
+    ast->function_definition_body = (void* ) 0;
     /* AST_FUNCTION_CALL */
     ast->function_call_name = (void *)0;
     ast->function_call_arguments = (void *)0;

@@ -46,6 +46,9 @@ AST_T *visitor_visit(visitor_T *visitor, AST_T *node)
     case AST_VARIABLE:
         return visitor_visit_variable(visitor, node);
         break;
+   case AST_FUNCTION_DEFINITION:
+	return visitor_visit_function_defintion(visitor, node);
+	break;
     case AST_FUNCTION_CALL:
         return visitor_visit_function_call(visitor, node);
         break;
@@ -108,6 +111,11 @@ AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node)
     //variable name does not exist
     printf("Undefined variable `%s\n`", node->variable_name);
     return node;
+}
+
+AST_T* visitor_visit_function_definition(visitor_T* visitor, AST_T* node) {
+	
+	return node;
 }
 
 //visit variable

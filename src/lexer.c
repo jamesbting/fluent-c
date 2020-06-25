@@ -30,7 +30,7 @@ void lexer_advance(lexer_T *lexer)
 void lexer_skip_whitespace(lexer_T *lexer)
 {
     //if there is a space character or a new line character, skip and advance to the next character
-    while (lexer->c == ' ' || lexer->c == 10)
+    while (lexer->c == ' ' || lexer->c == 10||lexer->c == '	')
     {
         lexer_advance(lexer);
     }
@@ -42,7 +42,7 @@ token_T *lexer_get_next_token(lexer_T *lexer)
     {
 
         //whitespace character, skip
-        if (lexer->c == ' ' || lexer->c == 10)
+        if (lexer->c == ' ' || lexer->c == 10||lexer->c =='	')
             lexer_skip_whitespace(lexer);
 
         //alpha numeric character, assume it is a variable name or a function name
@@ -71,6 +71,12 @@ token_T *lexer_get_next_token(lexer_T *lexer)
         case ',':
             return lexer_advance_with_token(lexer, init_token(TOKEN_COMMA, lexer_get_current_char_as_string(lexer)));
             break;
+	case '{':
+	    return lexer_advance_with_token(lexer, init_token(TOKEN_LBRACE, lexer_get_current_char_as_string(lexer)));
+	    break;
+	case '}':
+	    return lexer_advance_with_token(lexer, init_token(TOKEN_RBRACE, lexer_get_current_char_as_string(lexer)));
+	    break;
         }
     }
 

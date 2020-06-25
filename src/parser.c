@@ -106,6 +106,25 @@ AST_T *parser_parse_term(parser_T *parser)
 {
 }
 
+
+//function to define what to do when the client wants to define a function
+AST_T* parser_parser_function_defintion(parser_T *parser) {
+	AST_T* function_def = init_ast(AST_FUNCTION_DEFINITION);
+	parser_eat(parser, TOKEN_ID); //function keyword
+	char *function_name = parser->current_token->value;
+	parser_eat(parser,TOKEN_ID);
+	parser_eat(parser,TOKEN_LPAREN);
+	//TODO: add functionality for function parameters
+	parser_eat(parser,TOKEN_RPAREN);
+	parser_eat(parser,TOKEN_LBRACE);
+	//parse the body of the function
+	function_def->function_definition_body = parser_parse_statements(parser);
+	parser_eat(parser,TOKEN_RBRACE);
+
+	return function_def;
+
+
+}
 //parse a function call, and add all the arguments to the function call node
 AST_T *parser_parse_function_call(parser_T *parser)
 {
@@ -190,6 +209,10 @@ AST_T *parser_parse_ID(parser_T *parser)
     {
         return parser_parse_variable_definition(parser);
     }
+    else if(strcmp(parser->current_token->value,"function") == 0) {
+	return parser_parser_function_defintion(parser);
+    }
+
     else
     {
         return parser_parse_variable(parser);

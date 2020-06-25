@@ -7,6 +7,7 @@ typedef struct AST_STRUCT
 	enum
 	{
 		AST_FUNCTION_CALL,
+		AST_FUNCTION_DEFINITION,
 		AST_VARIABLE_DEFINITION,
 		AST_VARIABLE,
 		AST_STRING,
@@ -27,6 +28,9 @@ typedef struct AST_STRUCT
 	struct AST_STRUCT **function_call_arguments; //list of arguments for a function
 	size_t function_call_arguments_size;
 
+	/*AST function definition*/
+	struct AST_STRUCT* function_definition_body;
+	
 	/*AST_STRING*/
 	char *string_value;
 
