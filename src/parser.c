@@ -179,7 +179,7 @@ AST_T *parser_parse_variable(parser_T *parser)
     char *token_value = parser->current_token->value;
     parser_eat(parser, TOKEN_ID); // var name or function call name
 
-    //we found a left parathenses, so assume the user is access a variable, but is instead trying to call a
+    //we found a left parentheses, so assume the user is access a variable, but is instead trying to call a
     //a function
     if (parser->current_token->type == TOKEN_LPAREN)
         return parser_parse_function_call(parser);
