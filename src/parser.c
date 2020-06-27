@@ -17,7 +17,7 @@ parser_T *init_parser(lexer_T *lexer)
 }
 
 //go to the next token, and check if that token is an expected token, if raise an error message and terminate the program
-void parser_eat(parser_T *parser, int token_type, scope_T *scope)
+void parser_eat(parser_T *parser, int token_type)
 {
     if (parser->current_token->type == token_type)
     {
@@ -69,7 +69,7 @@ AST_T *parser_parse_statements(parser_T *parser, scope_T *scope)
     //while there are semi colons at the end of the statement
     while (parser->current_token->type == TOKEN_SEMI)
     {
-        parser_eat(parser, TOKEN_SEMI, scope);
+        parser_eat(parser, TOKEN_SEMI);
 
         AST_T *ast_statement = parser_parse_statement(parser, scope);
 
@@ -113,15 +113,15 @@ AST_T *parser_parse_term(parser_T *parser, scope_T *scope)
 AST_T *parser_parser_function_defintion(parser_T *parser, scope_T *scope)
 {
     AST_T *function_def = init_ast(AST_FUNCTION_DEFINITION);
-    parser_eat(parser, TOKEN_ID, scope); //expect function keyword
+    parser_eat(parser, TOKEN_ID); //expect function keyword
 
     //allocate memory for the function name
     char *function_name = parser->current_token->value;
     function_def->function_definition_name = calloc(strlen(function_name) + 1, sizeof(char));
     strcpy(function_def->function_definition_name, function_name);
 
-    parser_eat(parser, TOKEN_ID, scope);     //expect the function name
-    parser_eat(parser, TOKEN_LPAREN, scope); //expect '('
+    parser_eat(parser, TOKEN_ID);     //expect the function name
+    parser_eat(parser, TOKEN_LPAREN); //expect '('
 
     //allocate memory to the function defintion args list
     function_def->function_definition_args = calloc(1, sizeof(struct AST_STRUCT *));
@@ -134,7 +134,7 @@ AST_T *parser_parser_function_defintion(parser_T *parser, scope_T *scope)
     //while we have a comma, parse more variable defintions
     while (parser->current_token->type == TOKEN_COMMA)
     {
-        parser_eat(parser, TOKEN_COMMA, scope); //expect the comma
+        parser_eat(parser, TOKEN_COMMA); //expect the comma
 
         //reallocate the memory for the arguments
         function_def->function_definition_args_size += 1;
@@ -145,14 +145,14 @@ AST_T *parser_parser_function_defintion(parser_T *parser, scope_T *scope)
         AST_T *arg = parser_parse_variable(parser, scope);
         function_def->function_definition_args[function_def->function_definition_args_size - 1] = arg;
     }
-
+  
     //done parsing the parameters
-    parser_eat(parser, TOKEN_RPAREN, scope); //expect ')'
-    parser_eat(parser, TOKEN_LBRACE, scope); //expect '{'
+    parser_eat(parser, TOKEN_RPAREN); //expect ')'
+    parser_eat(parser, TOKEN_LBRACE); //expect '{'
 
     //parse the body of the function
     function_def->function_definition_body = parser_parse_statements(parser, scope);
-    parser_eat(parser, TOKEN_RBRACE, scope);
+    parser_eat(parser, TOKEN_RBRACE);
     function_def->scope = scope;
     return function_def;
 }
@@ -163,7 +163,7 @@ AST_T *parser_parse_function_call(parser_T *parser, scope_T *scope)
     AST_T *function_call = init_ast(AST_FUNCTION_CALL);
 
     function_call->function_call_name = parser->prev_token->value;
-    parser_eat(parser, TOKEN_LPAREN, scope);
+    parser_eat(parser, TOKEN_LPAREN);
 
     function_call->function_call_arguments = calloc(1, sizeof(struct AST_STRUCT *));
 
@@ -174,7 +174,7 @@ AST_T *parser_parse_function_call(parser_T *parser, scope_T *scope)
     //use a comma to separate the function calls
     while (parser->current_token->type == TOKEN_COMMA)
     {
-        parser_eat(parser, TOKEN_COMMA, scope);
+        parser_eat(parser, TOKEN_COMMA);
 
         AST_T *ast_expr = parser_parse_expr(parser, scope);
         function_call->function_call_arguments_size += 1;
@@ -183,7 +183,7 @@ AST_T *parser_parse_function_call(parser_T *parser, scope_T *scope)
             function_call->function_call_arguments_size * sizeof(struct AST_STRUCT *));
         function_call->function_call_arguments[function_call->function_call_arguments_size - 1] = ast_expr;
     }
-    parser_eat(parser, TOKEN_RPAREN, scope);
+    parser_eat(parser, TOKEN_RPAREN);
 
     function_call->scope = scope;
     return function_call;
@@ -192,10 +192,10 @@ AST_T *parser_parse_function_call(parser_T *parser, scope_T *scope)
 //parse a variable defintion, and store the value
 AST_T *parser_parse_variable_definition(parser_T *parser, scope_T *scope)
 {
-    parser_eat(parser, TOKEN_ID, scope); // expect "var" keyword
+    parser_eat(parser, TOKEN_ID); // expect "var" keyword
     char *variable_definition_variable_name = parser->current_token->value;
-    parser_eat(parser, TOKEN_ID, scope);     // expect the variable name
-    parser_eat(parser, TOKEN_EQUALS, scope); //expect the assignment operator "="
+    parser_eat(parser, TOKEN_ID);     // expect the variable name
+    parser_eat(parser, TOKEN_EQUALS); //expect the assignment operator "="
     AST_T *variable_definition_value = parser_parse_expr(parser, scope);
 
     AST_T *variable_definition = init_ast(AST_VARIABLE_DEFINITION);
@@ -210,7 +210,7 @@ AST_T *parser_parse_variable(parser_T *parser, scope_T *scope)
 {
 
     char *token_value = parser->current_token->value;
-    parser_eat(parser, TOKEN_ID, scope); // var name or function call name
+    parser_eat(parser, TOKEN_ID); // var name or function call name
 
     //we found a left parentheses, so assume the user is access a variable, but is instead trying to call a
     //a function
@@ -229,7 +229,7 @@ AST_T *parser_parse_string(parser_T *parser, scope_T *scope)
     AST_T *ast_string = init_ast(AST_STRING);
     ast_string->string_value = parser->current_token->value;
 
-    parser_eat(parser, TOKEN_STRING, scope);
+    parser_eat(parser, TOKEN_STRING);
 
     ast_string->scope = scope;
 
