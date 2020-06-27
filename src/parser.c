@@ -4,21 +4,20 @@
 #include "include/scope.h"
 //parser struct class
 
-
 parser_T *init_parser(lexer_T *lexer)
 {
     parser_T *parser = calloc(1, sizeof(struct PARSER_STRUCT));
     parser->lexer = lexer;
     parser->current_token = lexer_get_next_token(lexer);
     parser->prev_token = parser->current_token;
-	
-parser->scope = init_scope();
+
+    parser->scope = init_scope();
 
     return parser;
 }
 
 //go to the next token, and check if that token is an expected token, if raise an error message and terminate the program
-void parser_eat(parser_T *parser, int token_type, scope_T* scope)
+void parser_eat(parser_T *parser, int token_type, scope_T *scope)
 {
     if (parser->current_token->type == token_type)
     {
@@ -36,13 +35,13 @@ void parser_eat(parser_T *parser, int token_type, scope_T* scope)
 }
 
 //main entry point for the parser
-AST_T *parser_parse(parser_T *parser, scope_T* scope)
+AST_T *parser_parse(parser_T *parser, scope_T *scope)
 {
     return parser_parse_statements(parser, scope);
 }
 
 //parse a single statement
-AST_T *parser_parse_statement(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_statement(parser_T *parser, scope_T *scope)
 {
     switch (parser->current_token->type)
     {
@@ -54,7 +53,7 @@ AST_T *parser_parse_statement(parser_T *parser, scope_T* scope)
 }
 
 //parser multiple statements
-AST_T *parser_parse_statements(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_statements(parser_T *parser, scope_T *scope)
 {
 
     //make a compound statement node, and add all the statement into that node
@@ -63,7 +62,7 @@ AST_T *parser_parse_statements(parser_T *parser, scope_T* scope)
 
     //add first statement to compound statement node
     AST_T *ast_statement = parser_parse_statement(parser, scope);
-    ast_statement -> scope = scope;
+    ast_statement->scope = scope;
     compound->compound_value[0] = ast_statement;
     compound->compound_size += 1;
 
@@ -84,12 +83,12 @@ AST_T *parser_parse_statements(parser_T *parser, scope_T* scope)
             compound->compound_value[compound->compound_size - 1] = ast_statement;
         }
     }
-	compound->scope = scope;
+    compound->scope = scope;
     return compound;
 }
 
 //parse an expression, if its a string or id
-AST_T *parser_parse_expr(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_expr(parser_T *parser, scope_T *scope)
 {
     switch (parser->current_token->type)
     {
@@ -102,28 +101,28 @@ AST_T *parser_parse_expr(parser_T *parser, scope_T* scope)
     return init_ast(AST_NOOP);
 }
 
-AST_T *parser_parse_factor(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_factor(parser_T *parser, scope_T *scope)
 {
 }
 
-AST_T *parser_parse_term(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_term(parser_T *parser, scope_T *scope)
 {
 }
 
 //function to define what to do when the client wants to define a function
-AST_T *parser_parser_function_defintion(parser_T *parser, scope_T* scope)
+AST_T *parser_parser_function_defintion(parser_T *parser, scope_T *scope)
 {
     AST_T *function_def = init_ast(AST_FUNCTION_DEFINITION);
     parser_eat(parser, TOKEN_ID, scope); //expect function keyword
-    
-    
+
+    //allocate memory for the function name
     char *function_name = parser->current_token->value;
-    function_def->function_definition_name  = calloc(strlen(function_name) + 1, sizeof(char));
+    function_def->function_definition_name = calloc(strlen(function_name) + 1, sizeof(char));
     strcpy(function_def->function_definition_name, function_name);
-    
-    
+
     parser_eat(parser, TOKEN_ID, scope);     //expect the function name
     parser_eat(parser, TOKEN_LPAREN, scope); //expect '('
+
     //TODO: add functionality for function parameters
 
     parser_eat(parser, TOKEN_RPAREN, scope); //expect ')'
@@ -132,11 +131,12 @@ AST_T *parser_parser_function_defintion(parser_T *parser, scope_T* scope)
     //parse the body of the function
     function_def->function_definition_body = parser_parse_statements(parser, scope);
     parser_eat(parser, TOKEN_RBRACE, scope);
-	function_def->scope = scope;
+    function_def->scope = scope;
     return function_def;
 }
+
 //parse a function call, and add all the arguments to the function call node
-AST_T *parser_parse_function_call(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_function_call(parser_T *parser, scope_T *scope)
 {
     AST_T *function_call = init_ast(AST_FUNCTION_CALL);
 
@@ -168,7 +168,7 @@ AST_T *parser_parse_function_call(parser_T *parser, scope_T* scope)
 }
 
 //parse a variable defintion, and store the value
-AST_T *parser_parse_variable_definition(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_variable_definition(parser_T *parser, scope_T *scope)
 {
     parser_eat(parser, TOKEN_ID, scope); // expect "var" keyword
     char *variable_definition_variable_name = parser->current_token->value;
@@ -179,12 +179,12 @@ AST_T *parser_parse_variable_definition(parser_T *parser, scope_T* scope)
     AST_T *variable_definition = init_ast(AST_VARIABLE_DEFINITION);
     variable_definition->variable_definition_variable_name = variable_definition_variable_name;
     variable_definition->variable_definition_value = variable_definition_value;
-	variable_definition->scope = scope;
+    variable_definition->scope = scope;
     return variable_definition;
 }
 
 //parse accessing a variable and add it to the AST
-AST_T *parser_parse_variable(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_variable(parser_T *parser, scope_T *scope)
 {
 
     char *token_value = parser->current_token->value;
@@ -197,18 +197,18 @@ AST_T *parser_parse_variable(parser_T *parser, scope_T* scope)
 
     AST_T *ast_variable = init_ast(AST_VARIABLE);
     ast_variable->variable_name = token_value;
-	ast_variable->scope = scope;
+    ast_variable->scope = scope;
     return ast_variable;
 }
 
 //parse a string into the AST
-AST_T *parser_parse_string(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_string(parser_T *parser, scope_T *scope)
 {
     AST_T *ast_string = init_ast(AST_STRING);
     ast_string->string_value = parser->current_token->value;
 
     parser_eat(parser, TOKEN_STRING, scope);
-	
+
     ast_string->scope = scope;
 
     return ast_string;
@@ -216,7 +216,7 @@ AST_T *parser_parse_string(parser_T *parser, scope_T* scope)
 
 //assume if we have an id, and the current value is var that the user is trying to assign a new variable, if not,
 //then assume they are trying to access the name of a new variable
-AST_T *parser_parse_ID(parser_T *parser, scope_T* scope)
+AST_T *parser_parse_ID(parser_T *parser, scope_T *scope)
 {
     if (strcmp(parser->current_token->value, "var") == 0)
     {

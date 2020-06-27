@@ -128,13 +128,14 @@ AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node)
         return builtin_function_print(visitor, node->function_call_arguments, node->function_call_arguments_size);
     }
 
-	AST_T* fdef = scope_get_function_definition(
-			node->scope,
-		       	node->function_call_name
-		);
-	if(fdef != (void*) 0) {
-		return visitor_visit(visitor, fdef->function_definition_body);
-	}
+    //not a built in function, check for defined function
+    AST_T *fdef = scope_get_function_definition(
+        node->scope,
+        node->function_call_name);
+    if (fdef != (void *)0)
+    {
+        return visitor_visit(visitor, fdef->function_definition_body);
+    }
 
     printf("Undefined method `%s`\n", node->function_call_name);
     exit(1);

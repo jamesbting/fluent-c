@@ -6,9 +6,10 @@ AST_T *init_ast(int type)
     AST_T *ast = calloc(1, sizeof(struct AST_STRUCT));
     ast->type = type;
 
-	ast->scope = (void*) 0;
+    ast->scope = (void *)0;
 
     // I initially set all the inputs to (void*) pointers to limit segmentation fault errors when
+
     //creating new nodes of the AST
     /* AST_VARIABLE_DEFINITION */
     ast->variable_definition_variable_name = (void *)0;
@@ -16,10 +17,10 @@ AST_T *init_ast(int type)
 
     /* AST_VARIABLE */
     ast->variable_name = (void *)0;
-	
+
     /*AST_FUNCTION_DEFINITION */
-    ast->function_definition_body = (void* ) 0;
-    ast->function_definition_name = (void*) 0;
+    ast->function_definition_body = (void *)0;
+    ast->function_definition_name = (void *)0;
 
     /* AST_FUNCTION_CALL */
     ast->function_call_name = (void *)0;
