@@ -5,3 +5,6 @@ function doSomething() {
 doSomething();
 doSomething();
 doSomething();
+
+
+yo();

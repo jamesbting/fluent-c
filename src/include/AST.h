@@ -35,6 +35,8 @@ typedef struct AST_STRUCT
 	/*AST function definition*/
 	char* function_definition_name;
 	struct AST_STRUCT* function_definition_body;
+	struct AST_STRUCT** function_definition_args;	
+	size_t function_definition_args_size;
 	
 	/*AST_STRING*/
 	char *string_value;

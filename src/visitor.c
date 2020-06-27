@@ -109,7 +109,7 @@ AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node)
     }
 
     //variable name does not exist
-    printf("Undefined variable `%s\n`", node->variable_name);
+    printf("Undefined variable '%s`\n", node->variable_name);
     return node;
 }
 
@@ -132,6 +132,8 @@ AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node)
     AST_T *fdef = scope_get_function_definition(
         node->scope,
         node->function_call_name);
+
+
     if (fdef != (void *)0)
     {
         return visitor_visit(visitor, fdef->function_definition_body);

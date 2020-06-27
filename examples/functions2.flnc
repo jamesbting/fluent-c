@@ -1,0 +1,6 @@
+function doSomething(x, y) {
+	print(x);
+	print(y);
+};
+
+doSomething("hello","world");
