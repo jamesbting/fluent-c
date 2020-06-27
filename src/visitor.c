@@ -1,7 +1,7 @@
 #include "include/visitor.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "include/scope.h"
 //built in print function that will print the value of the print parameters to STDOUT
 //only supports strings at the moment
 static AST_T *builtin_function_print(visitor_T *visitor, AST_T **args, int args_size)
@@ -47,7 +47,7 @@ AST_T *visitor_visit(visitor_T *visitor, AST_T *node)
         return visitor_visit_variable(visitor, node);
         break;
     case AST_FUNCTION_DEFINITION:
-        return visitor_visit_function_defintion(visitor, node);
+        return visitor_visit_function_definition(visitor, node);
         break;
     case AST_FUNCTION_CALL:
         return visitor_visit_function_call(visitor, node);
@@ -116,7 +116,7 @@ AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node)
 //visit a function defintion node
 AST_T *visitor_visit_function_definition(visitor_T *visitor, AST_T *node)
 {
-
+    scope_add_function_definition(node->scope, node);
     return node;
 }
 
@@ -127,6 +127,14 @@ AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node)
     {
         return builtin_function_print(visitor, node->function_call_arguments, node->function_call_arguments_size);
     }
+
+	AST_T* fdef = scope_get_function_definition(
+			node->scope,
+		       	node->function_call_name
+		);
+	if(fdef != (void*) 0) {
+		return visitor_visit(visitor, fdef->function_definition_body);
+	}
 
     printf("Undefined method `%s`\n", node->function_call_name);
     exit(1);

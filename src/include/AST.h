@@ -14,6 +14,10 @@ typedef struct AST_STRUCT
 		AST_COMPOUND,
 		AST_NOOP
 	} type;
+	
+	//declare the scope of the node
+	struct SCOPE_STRUCT* scope;
+
 
 	//properties of the AST NODE
 	/*AST_VARIABLE_DEFINITION */
@@ -29,6 +33,7 @@ typedef struct AST_STRUCT
 	size_t function_call_arguments_size;
 
 	/*AST function definition*/
+	char* function_definition_name;
 	struct AST_STRUCT* function_definition_body;
 	
 	/*AST_STRING*/

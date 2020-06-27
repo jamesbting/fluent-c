@@ -1,5 +1,7 @@
 function doSomething() {
-	print("something");
-}
+	print("hello");
+};
 
+doSomething();
+doSomething();
 doSomething();
