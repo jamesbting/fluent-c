@@ -123,28 +123,30 @@ AST_T *parser_parser_function_defintion(parser_T *parser, scope_T *scope)
     parser_eat(parser, TOKEN_ID, scope);     //expect the function name
     parser_eat(parser, TOKEN_LPAREN, scope); //expect '('
 
-    //TODO: add functionality for function parameters
-	
     //allocate memory to the function defintion args list
-    function_def->function_definition_args = calloc(1, sizeof(struct AST_STRUCT*));
+    function_def->function_definition_args = calloc(1, sizeof(struct AST_STRUCT *));
 
-    AST_T* arg = parser_parse_variable(parser, scope);
-    function_def->function_definition_args_size += 1;
-    function_def->function_definition_args[function_def->function_definition_args_size-1] = arg;
+    //parse a variable (which is in the function parameters)
+    AST_T *arg = parser_parse_variable(parser, scope);                                             //parse a parameter
+    function_def->function_definition_args_size += 1;                                              //increment the size of the arguments array
+    function_def->function_definition_args[function_def->function_definition_args_size - 1] = arg; //added to the end of the arguments
 
-    while(parser->current_token->type == TOKEN_COMMA) {
-	    parser_eat(parser, TOKEN_COMMA, scope); //expect the comma
-	    
-	    function_def->function_definition_args_size += 1;
-		function_def->function_definition_args = realloc(
-			function_def->function_definition_args,
-			function_def->function_definition_args_size * sizeof(struct AST_STRUCT*)
-				);
-	    
-	    AST_T* arg = parser_parse_variable(parser,scope);
-	function_def->function_definition_args[function_def->function_definition_args_size-1] = arg;
+    //while we have a comma, parse more variable defintions
+    while (parser->current_token->type == TOKEN_COMMA)
+    {
+        parser_eat(parser, TOKEN_COMMA, scope); //expect the comma
+
+        //reallocate the memory for the arguments
+        function_def->function_definition_args_size += 1;
+        function_def->function_definition_args = realloc(
+            function_def->function_definition_args,
+            function_def->function_definition_args_size * sizeof(struct AST_STRUCT *));
+
+        AST_T *arg = parser_parse_variable(parser, scope);
+        function_def->function_definition_args[function_def->function_definition_args_size - 1] = arg;
     }
 
+    //done parsing the parameters
     parser_eat(parser, TOKEN_RPAREN, scope); //expect ')'
     parser_eat(parser, TOKEN_LBRACE, scope); //expect '{'
 
