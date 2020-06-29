@@ -36,6 +36,8 @@ visitor_T *init_visitor()
 //visit a specified node, and depending on the node type, perform different actions
 AST_T *visitor_visit(visitor_T *visitor, AST_T *node)
 {
+
+    //switch on the type of node
     switch (node->type)
     {
     case AST_VARIABLE_DEFINITION:
@@ -75,9 +77,8 @@ AST_T *visitor_visit_variable_definition(visitor_T *visitor, AST_T *node)
 
     scope_add_variable_definition(node->scope, node);
     return node;
-}			       
-			
-			
+}
+
 //user is trying to access a previously declared variable
 AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node)
 {
@@ -85,8 +86,8 @@ AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node)
         node->scope,
         node->variable_name);
     //if we found a variable defintion, visit it and get the value
-    if (vdef != (void*) 0) return visitor_visit(visitor, vdef->variable_definition_value);
- 
+    if (vdef != (void *)0)
+        return visitor_visit(visitor, vdef->variable_definition_value);
 
     //variable name does not exist
     printf("Undefined variable '%s`\n", node->variable_name);
@@ -112,7 +113,6 @@ AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node)
     AST_T *fdef = scope_get_function_definition(
         node->scope,
         node->function_call_name);
-
 
     if (fdef != (void *)0)
     {

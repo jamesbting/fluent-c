@@ -2,26 +2,26 @@
 #define VISITOR_H
 #include "AST.h"
 
+typedef struct VISITOR_STRUCT
+{
+} visitor_T;
 
-typedef struct VISITOR_STRUCT{
-}visitor_T;
-
-visitor_T* init_visitor();
+visitor_T *init_visitor();
 
 //entry point for visiting the tree
-AST_T* visitor_visit(visitor_T* visitor, AST_T* node);
+AST_T *visitor_visit(visitor_T *visitor, AST_T *node);
 
-AST_T* visitor_visit_variable_definition(visitor_T* visitor, AST_T* node);
+//visit different types of AST nodes
+AST_T *visitor_visit_variable_definition(visitor_T *visitor, AST_T *node);
 
-AST_T* visitor_visit_variable(visitor_T* visitor, AST_T* node);
+AST_T *visitor_visit_variable(visitor_T *visitor, AST_T *node);
 
-AST_T* visitor_visit_function_definition(visitor_T* visitor, AST_T* node);
+AST_T *visitor_visit_function_definition(visitor_T *visitor, AST_T *node);
 
-AST_T* visitor_visit_function_call(visitor_T* visitor, AST_T* node);
+AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node);
 
-AST_T* visitor_visit_string(visitor_T* visitor, AST_T* node);
+AST_T *visitor_visit_string(visitor_T *visitor, AST_T *node);
 
-AST_T* visitor_visit_compound(visitor_T* visitor, AST_T*node);
-
+AST_T *visitor_visit_compound(visitor_T *visitor, AST_T *node);
 
 #endif
