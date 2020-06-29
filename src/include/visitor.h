@@ -3,9 +3,7 @@
 #include "AST.h"
 
 
-typedef struct VISITOR_STRUCT {
-	AST_T** variable_definitions;
-	size_t variable_definition_size;
+typedef struct VISITOR_STRUCT{
 }visitor_T;
 
 visitor_T* init_visitor();
