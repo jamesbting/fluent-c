@@ -114,13 +114,40 @@ AST_T *visitor_visit_function_call(visitor_T *visitor, AST_T *node)
         node->scope,
         node->function_call_name);
 
-    if (fdef != (void *)0)
+    //check if the specified function has be defined
+    if (fdef == (void *)0)
     {
-        return visitor_visit(visitor, fdef->function_definition_body);
+	printf("Undefined method '%s'\n", node->function_call_name);
+	exit(1);
     }
+   
+    //append arguments as variables to the function's scope  
+   for(int i = 0; i < node->function_call_arguments_size; i++) 
+   {
+	   //get variable from function definition arguments
+	AST_T* ast_var = (AST_T*) fdef->function_definition_args[i];
+	//get value from function call arguments
+	AST_T* ast_value = (AST_T*)  node->function_call_arguments[i];
+	
+	AST_T* ast_vardef = init_ast(AST_VARIABLE_DEFINITION);
+	//AST_T* variable_def = init_ast(AST_VARIABLE_DEFINITION);
+	
+	//copy the variable value
+	ast_vardef->variable_definition_value = ast_value;
+	//copy the variable name
+	ast_vardef->variable_definition_variable_name = (char*) calloc(strlen(ast_var->variable_name)+1, sizeof(char));
+	strcpy(ast_vardef->variable_definition_variable_name, ast_var->variable_name);
+	//push to scope
+	scope_add_variable_definition(
+			fdef->function_definition_body->scope,
+			ast_vardef
+	);
 
-    printf("Undefined method `%s`\n", node->function_call_name);
-    exit(1);
+   } 
+	
+
+    return visitor_visit(visitor, fdef->function_definition_body);
+  
 }
 
 AST_T *visitor_visit_string(visitor_T *visitor, AST_T *node)
